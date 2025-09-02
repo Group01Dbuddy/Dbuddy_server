@@ -1,0 +1,62 @@
+{
+  "Fride_rice": {
+    "calories_per_100g": 163,
+    "carbs": 31,
+    "protein": 4.7,
+    "fat": 2.3
+  },
+  "Milk_rice": {
+    "calories_per_100g": 142,
+    "carbs": 24.88,
+    "protein": 5.1,
+    "fat": 2.17
+  },
+  "Rice": {
+    "calories_per_100g": 130,
+    "carbs": 50,
+    "protein": 3.25,
+    "fat": 1.1
+  },
+  "Hoppers_": {
+    "calories_per_100g": 90,
+    "carbs": 13.5,
+    "protein": 2,
+    "fat": 2.4
+  },
+  "String Hoppers_": {
+    "calories_per_100g": 130,
+    "carbs": 37.5,
+    "protein": 2,
+    "fat": 1.7
+  },
+  "Egg Hoppers_": {
+    "calories_per_100g": 109,
+    "carbs": 21.2,
+    "protein": 8,
+    "fat": 4.8
+  },
+  "Kottu": {
+    "calories_per_100g": 333,
+    "carbs": 68.25,
+    "protein": 19.4,
+    "fat": 20.5
+  },
+  "Noodles": {
+    "calories_per_100g": 138,
+    "carbs": 25,
+    "protein": 4.5,
+    "fat": 1.7
+  },
+  "Paratha": {
+    "calories_per_100g": 325,
+    "carbs": 45.4,
+    "protein": 6.4,
+    "fat": 15.75
+  },
+  "Thosee": {
+    "calories_per_100g": 189,
+    "carbs": 37,
+    "protein": 5.7,
+    "fat": 4.1
+  }
+}
