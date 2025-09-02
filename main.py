@@ -6,6 +6,9 @@ from tensorflow.keras.applications.efficientnet import preprocess_input
 from PIL import Image
 import io
 import json
+import gdown
+import os
+import shutil
 
 app = FastAPI()
 
@@ -16,8 +19,19 @@ with open("class_names.json", "r") as f:
 with open("food_calories.json", "r") as f:
     nutrition_data = json.load(f)
 
-# 2️⃣ Load TFLite model
-interpreter = tf.lite.Interpreter(model_path="food_b7_final_fp16.tflite")
+# 2️⃣ Download TFLite model from Google Drive if not exists
+MODEL_DRIVE_ID = "1odfLbo1_d326ANyj-W_nPZYhitrTOUk4"
+VOLUME_PATH = "/app/models"  # Make sure your Railway volume is mounted here
+os.makedirs(VOLUME_PATH, exist_ok=True)
+MODEL_PATH = os.path.join(VOLUME_PATH, "food_b7_final_fp16.tflite")
+
+if not os.path.exists(MODEL_PATH):
+    url = f"https://drive.google.com/uc?id={MODEL_DRIVE_ID}"
+    print("Downloading TFLite model from Google Drive...")
+    gdown.download(url, MODEL_PATH, quiet=False)
+
+# 3️⃣ Load TFLite model
+interpreter = tf.lite.Interpreter(model_path=MODEL_PATH)
 interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
@@ -26,7 +40,7 @@ output_details = interpreter.get_output_details()
 def home():
     return {"status": "Server running"}
 
-# 3️⃣ Prediction endpoint
+# 4️⃣ Prediction endpoint
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     # Read and preprocess image
