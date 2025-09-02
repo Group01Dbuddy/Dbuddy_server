@@ -12,35 +12,45 @@ import shutil
 
 app = FastAPI()
 
-# 1️⃣ Load class labels and nutrition JSONs
-with open("class_names.json", "r") as f:
-    class_labels = json.load(f)
-
-with open("food_calories.json", "r") as f:
-    nutrition_data = json.load(f)
-
-# 2️⃣ Download TFLite model from Google Drive if not exists
-MODEL_DRIVE_ID = "1odfLbo1_d326ANyj-W_nPZYhitrTOUk4"
-VOLUME_PATH = "/app/models"  # Make sure your Railway volume is mounted here
+# ---------- Paths ----------
+VOLUME_PATH = "/app/models"  # Railway volume mount path
 os.makedirs(VOLUME_PATH, exist_ok=True)
 MODEL_PATH = os.path.join(VOLUME_PATH, "food_b7_final_fp16.tflite")
+CLASS_JSON_PATH = "class_names.json"
+NUTRITION_JSON_PATH = "food_calories.json"
+
+# ---------- Check JSON files ----------
+if not os.path.exists(CLASS_JSON_PATH):
+    raise FileNotFoundError(f"{CLASS_JSON_PATH} not found in project directory.")
+if not os.path.exists(NUTRITION_JSON_PATH):
+    raise FileNotFoundError(f"{NUTRITION_JSON_PATH} not found in project directory.")
+
+# Load class labels and nutrition data
+with open(CLASS_JSON_PATH, "r") as f:
+    class_labels = json.load(f)
+
+with open(NUTRITION_JSON_PATH, "r") as f:
+    nutrition_data = json.load(f)
+
+# ---------- Download TFLite model if missing ----------
+MODEL_DRIVE_ID = "1odfLbo1_d326ANyj-W_nPZYhitrTOUk4"
 
 if not os.path.exists(MODEL_PATH):
-    url = f"https://drive.google.com/uc?id={MODEL_DRIVE_ID}"
     print("Downloading TFLite model from Google Drive...")
+    url = f"https://drive.google.com/uc?id={MODEL_DRIVE_ID}"
     gdown.download(url, MODEL_PATH, quiet=False)
 
-# 3️⃣ Load TFLite model
+# ---------- Load TFLite model ----------
 interpreter = tf.lite.Interpreter(model_path=MODEL_PATH)
 interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
+# ---------- API Endpoints ----------
 @app.get("/")
 def home():
     return {"status": "Server running"}
 
-# 4️⃣ Prediction endpoint
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     # Read and preprocess image
@@ -65,3 +75,9 @@ async def predict(file: UploadFile = File(...)):
         "confidence": float(np.max(preds)),
         "nutrition_info": nutrition_info
     }
+
+# ---------- Debug File Checks ----------
+print("File check:")
+print("Model exists:", os.path.exists(MODEL_PATH))
+print("Class JSON exists:", os.path.exists(CLASS_JSON_PATH))
+print("Nutrition JSON exists:", os.path.exists(NUTRITION_JSON_PATH))
